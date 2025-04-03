@@ -1,0 +1,71 @@
+package br.unesp.rc.MSReplicator.consumer;
+
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
+
+import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import br.unesp.rc.MSReplicator.domain.MSCondominium.model.RentableArea;
+import br.unesp.rc.MSReplicator.domain.MSCondominium.repository.RentableAreaCondominiumRepository;
+import br.unesp.rc.MSReplicator.domain.MSReservation.repository.RentableAreaReservationRepository;
+import br.unesp.rc.MSReplicator.domain.mapper.RentableAreaMapper;
+import br.unesp.rc.MSReplicator.domain.model.DebeziumMessage;
+import br.unesp.rc.MSReplicator.domain.model.DebeziumPayload;
+
+@Component
+public class RentableAreaConsumer {
+    private static final String topic = "MSCondominium.public.rentable_area";
+    private static final String group = "case-study-group";
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
+    RentableAreaCondominiumRepository rentableAreaCondominiumRepository;
+    
+    @Autowired
+    RentableAreaReservationRepository rentableAreaReservationRepository;
+
+    @KafkaListener(topics = topic, groupId = group)
+    public void consumer(ConsumerRecord<String, String> record) {
+        try {
+            String messageValue = record.value(); // JSON bruto da mensagem
+            
+            // Desserializa para o tipo correto
+            DebeziumMessage<RentableArea> debeziumMessage = objectMapper.readValue(
+                messageValue, new TypeReference<DebeziumMessage<RentableArea>>() {}
+            );
+            DebeziumPayload<RentableArea> payload = debeziumMessage.getPayload();
+            switch (payload.getOperation()) {
+                case CREATE:
+                    RentableArea rentableAreaPartial = payload.getAfter();
+                    RentableArea rentableArea = rentableAreaCondominiumRepository.findById(rentableAreaPartial.getId()).get();
+
+                    br.unesp.rc.MSReplicator.domain.MSReservation.model.RentableArea reservationRentableArea = RentableAreaMapper.toRentableArea(rentableArea);
+                    rentableAreaReservationRepository.save(reservationRentableArea);
+
+                    
+                    System.out.println("Entidade criada: " + payload.getAfter());
+                    break;
+                
+                case DELETE:
+                    rentableAreaReservationRepository.deleteById(payload.getBefore().getId());
+                    System.out.println("Entidade deletada: " + payload.getBefore());
+                    break;
+            
+                case UPDATE:
+                    rentableAreaReservationRepository.save(RentableAreaMapper.toRentableArea(payload.getAfter()));
+                    System.out.println("Entidade atualizada: " + payload.getAfter());
+                    break;
+                default:
+
+                    break;
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+}

@@ -1,4 +1,4 @@
-package br.unesp.rc.MSCondominium.model;
+package br.unesp.rc.MSReplicator.domain.MSCondominium.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

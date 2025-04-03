@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -123,8 +124,9 @@ public class CondominiumController {
         )
     })
     @PostMapping(value = "/save", produces = "application/json")
-    public ResponseEntity<?> save(Condominium condominium) {
+    public ResponseEntity<?> save(@RequestBody Condominium condominium) {
         try {
+            System.out.println(condominium);
             Condominium newCondominium = condominiumService.save(condominium);
 
             return new ResponseEntity<Condominium>(newCondominium, HttpStatus.OK);
@@ -157,7 +159,7 @@ public class CondominiumController {
         )
     })
     @PutMapping(value = "/update", produces = "application/json")
-    public ResponseEntity<?> update(Condominium condominium) {
+    public ResponseEntity<?> update(@RequestBody Condominium condominium) {
         try {
             Condominium newCondominium = condominiumService.update(condominium);
 

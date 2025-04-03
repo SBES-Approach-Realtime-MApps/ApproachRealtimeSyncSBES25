@@ -84,6 +84,7 @@ services:
       POSTGRES_USER: postuser
       POSTGRES_PASSWORD: postpass
       POSTGRES_DB: MSCondominium
+    command: ["postgres", "-c", "wal_level=logical"]
     networks:
       - integradorweb-net
 
@@ -102,7 +103,6 @@ services:
       - integradorweb-net
 
   mongodb:
-    hostname: mongodb
     container_name: mongodb
     image: mongo
     ports:
@@ -111,8 +111,17 @@ services:
       MONGO_INITDB_ROOT_USERNAME: rootuser
       MONGO_INITDB_ROOT_PASSWORD: rootpass
       MONGO_INITDB_DATABASE: MSResident
+    command: ["/bin/bash", "/entrypoint.sh"]
     networks:
       - integradorweb-net
+    volumes:
+      - ./mongo-keyfile:/data/configdb/mongo-keyfile
+      - ./MongoEntrypoint.sh:/entrypoint.sh
+    healthcheck:
+      test: echo 'db.runCommand(\"ping\").ok' | mongosh --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 
 networks:

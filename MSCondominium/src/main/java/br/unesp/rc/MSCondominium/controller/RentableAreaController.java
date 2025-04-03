@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -119,7 +120,7 @@ public class RentableAreaController {
         )
     })
     @PostMapping(value = "/save", produces = "application/json")
-    public ResponseEntity<?> save(RentableArea rentableArea) {
+    public ResponseEntity<?> save(@RequestBody RentableArea rentableArea) {
         try {            RentableArea newRentableArea = rentableAreaService.save(rentableArea);
             return new ResponseEntity<RentableArea>(newRentableArea, HttpStatus.OK);
         } catch (Exception e) {            
@@ -150,8 +151,9 @@ public class RentableAreaController {
         )
     })
     @PutMapping(value = "/update", produces = "application/json")
-    public ResponseEntity<?> update(RentableArea rentableArea) {
-        try {            RentableArea newRentableArea = rentableAreaService.update(rentableArea);
+    public ResponseEntity<?> update(@RequestBody RentableArea rentableArea) {
+        try {            
+            RentableArea newRentableArea = rentableAreaService.update(rentableArea);
             return new ResponseEntity<RentableArea>(newRentableArea, HttpStatus.OK);
         } catch (Exception e) {            
             return new ResponseEntity<Error>(new Error(e), HttpStatus.BAD_REQUEST);

@@ -3,12 +3,12 @@
     "config": {
       "plugin.name": "pgoutput",
       "connector.class": "io.debezium.connector.postgresql.PostgresConnector", 
-      "database.hostname": "postgres-container", 
+      "database.hostname": "postgres", 
       "database.port": "5432", 
       "database.user": "postuser", 
-      "database.password": "postpass", 
+      "database.password": "postpass",
       "database.dbname" : "MSCondominium", 
-      "topic.prefix": "fulfillment",
-      "table.include.list": "public.condominium"
+      "topic.prefix": "MSCondominium",
+      "table.include.list": "public.rentable_area"
     }
   }
