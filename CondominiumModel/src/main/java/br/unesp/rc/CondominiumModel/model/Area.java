@@ -1,63 +1,54 @@
-package br.unesp.rc.MSCondominium.model;
+package br.unesp.rc.CondominiumModel.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class Unit {
+@Inheritance(strategy = InheritanceType.JOINED)
+public class Area {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    private String location;
-    private double sizeSM;
+    private String name;
+    private int size;
 
     @JoinColumn(name = "condominium_id")
     @ManyToOne
     private Condominium condominium;
 
-    @JoinColumn(name = "resident_id")
-    @ManyToOne
-    private Resident resident;
-    
     public long getId() {
         return id;
     }
-
-    public String getLocation() {
-        return location;
+    
+    public String getName() {
+        return name;
     }
-
-    public void setLocation(String location) {
-        this.location = location;
+    
+    public void setName(String name) {
+        this.name = name;
     }
-
-    public double getSizeSM() {
-        return sizeSM;
+    
+    public int getSize() {
+        return size;
     }
-
-    public void setSizeSM(double sizeSM) {
-        this.sizeSM = sizeSM;
+    
+    public void setSize(int size) {
+        this.size = size;
     }
-
+    
     public Condominium getCondominium() {
         return condominium;
     }
 
     public void setCondominium(Condominium condominium) {
         this.condominium = condominium;
-    }
-
-    public Resident getResident() {
-        return resident;
-    }
-
-    public void setResident(Resident resident) {
-        this.resident = resident;
     }
 }

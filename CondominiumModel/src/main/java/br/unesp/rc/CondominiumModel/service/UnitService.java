@@ -1,4 +1,4 @@
-package br.unesp.rc.MSCondominium.service;
+package br.unesp.rc.CondominiumModel.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,8 +6,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.unesp.rc.MSCondominium.model.Unit;
-import br.unesp.rc.MSCondominium.repository.UnitRepository;
+import br.unesp.rc.CondominiumModel.model.Unit;
+import br.unesp.rc.CondominiumModel.repository.UnitRepository;
+
+
 
 @Service
 public class UnitService {

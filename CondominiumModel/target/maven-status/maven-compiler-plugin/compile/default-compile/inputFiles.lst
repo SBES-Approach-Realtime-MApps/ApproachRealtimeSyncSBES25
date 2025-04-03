@@ -1,0 +1,15 @@
+/home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/repository/UnitRepository.java
+/home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/model/Common.java
+/home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/model/Resident.java
+/home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/model/RentableArea.java
+/home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/model/Specific.java
+/home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/service/CondominiumService.java
+/home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/model/Condominium.java
+/home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/model/ResidentType.java
+/home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/repository/CondominiumRepository.java
+/home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/repository/RentableAreaRepository.java
+/home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/model/CondominiumType.java
+/home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/service/RentableAreaService.java
+/home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/model/Unit.java
+/home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/model/Area.java
+/home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/service/UnitService.java

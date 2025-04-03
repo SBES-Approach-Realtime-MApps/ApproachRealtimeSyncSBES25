@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.unesp.rc.MSCondominium.model.Unit;
-import br.unesp.rc.MSCondominium.service.UnitService;
+import br.unesp.rc.CondominiumModel.model.Unit;
+import br.unesp.rc.CondominiumModel.service.UnitService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;

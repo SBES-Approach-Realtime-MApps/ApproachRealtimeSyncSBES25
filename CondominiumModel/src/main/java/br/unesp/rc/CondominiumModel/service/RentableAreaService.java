@@ -1,4 +1,4 @@
-package br.unesp.rc.MSCondominium.service;
+package br.unesp.rc.CondominiumModel.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,8 +6,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.unesp.rc.MSCondominium.model.RentableArea;
-import br.unesp.rc.MSCondominium.repository.RentableAreaRepository;
+import br.unesp.rc.CondominiumModel.model.RentableArea;
+import br.unesp.rc.CondominiumModel.repository.RentableAreaRepository;
+
 
 @Service
 public class RentableAreaService {

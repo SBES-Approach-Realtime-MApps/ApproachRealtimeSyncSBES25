@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.unesp.rc.MSCondominium.model.Condominium;
-import br.unesp.rc.MSCondominium.service.CondominiumService;
+import br.unesp.rc.CondominiumModel.model.Condominium;
+import br.unesp.rc.CondominiumModel.service.CondominiumService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
