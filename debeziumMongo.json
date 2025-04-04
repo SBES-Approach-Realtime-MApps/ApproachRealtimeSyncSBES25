@@ -1,0 +1,16 @@
+{
+    "name": "mongo-connector",
+    "config": {
+        "connector.class": "io.debezium.connector.mongodb.MongoDbConnector",
+        "tasks.max": "1",
+        "mongodb.connection.string": "mongodb://rootuser:rootpass@mongodb:27017/?authSource=admin&replicaSet=rs0",
+        "mongodb.hosts": "rs0/mongodb:27017",
+        "mongodb.user": "rootuser",
+        "mongodb.password": "rootpass",
+        "database.include.list": "MSResident",
+        "collection.include.list": "MSResident.Resident",
+        "topic.prefix": "MSResident",
+        "database.history.kafka.bootstrap.servers": "kafka:9092",
+        "database.history.kafka.topic": "schema-changes.mongo"
+    }
+}

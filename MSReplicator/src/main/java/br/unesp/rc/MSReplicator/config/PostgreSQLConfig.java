@@ -19,7 +19,7 @@ import jakarta.persistence.EntityManagerFactory;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-    basePackages = "br.unesp.rc.MSReplicator.domain.MSCondominium.repository",
+    basePackages = "br.unesp.rc.CondominiumModel.repository",
     entityManagerFactoryRef = "postgresEntityManagerFactory",
     transactionManagerRef = "postgresTransactionManager"
 )
@@ -37,7 +37,7 @@ public class PostgreSQLConfig {
             @Qualifier("postgresDataSource") DataSource dataSource) {
         return builder
                 .dataSource(dataSource)
-                .packages("br.unesp.rc.MSReplicator.domain.MSCondominium.model") // Pacote das entidades
+                .packages("br.unesp.rc.CondominiumModel.model") // Pacote das entidades
                 .persistenceUnit("postgresPU")
                 .build();
     }

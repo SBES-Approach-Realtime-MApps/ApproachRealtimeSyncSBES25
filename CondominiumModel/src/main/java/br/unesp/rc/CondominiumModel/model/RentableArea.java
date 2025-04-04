@@ -22,4 +22,8 @@ public class RentableArea extends Common {
     public void setValue(double value) {
         this.value = value;
     }
+
+    public String toString() {
+        return "RentableArea [id=" + super.getId() + ", name=" + super.getName() + ", size=" + super.getSize() + ", capacity=" + capacity + ", value=" + value + "]";
+    }
 }

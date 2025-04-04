@@ -115,13 +115,10 @@ services:
     networks:
       - integradorweb-net
     volumes:
-      - ./mongo-keyfile:/data/configdb/mongo-keyfile
-      - ./MongoEntrypoint.sh:/entrypoint.sh
-    healthcheck:
-      test: echo 'db.runCommand(\"ping\").ok' | mongosh --quiet
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - ./MongoConfig/mongo-keyfile:/data/configdb/mongo-keyfile
+      - ./MongoConfig/MongoEntrypoint.sh:/entrypoint.sh
+      - ./MongoConfig/mongod.conf:/etc/mongod.conf
+    
 
 
 networks:

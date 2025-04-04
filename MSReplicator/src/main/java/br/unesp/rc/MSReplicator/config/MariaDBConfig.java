@@ -20,7 +20,7 @@ import jakarta.persistence.EntityManagerFactory;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-    basePackages = "br.unesp.rc.MSReplicator.domain.MSReservation.repository",
+    basePackages = "br.unesp.rc.ReservationModel.repository",
     entityManagerFactoryRef = "mariaDBEntityManagerFactory",
     transactionManagerRef = "mariaDBTransactionManager"
 )
@@ -41,7 +41,7 @@ public class MariaDBConfig {
     ){
         return builder
             .dataSource(dataSource)
-            .packages("br.unesp.rc.MSReplicator.domain.MSReservation.model")
+            .packages("br.unesp.rc.ReservationModel.model")
             .persistenceUnit("mariaDbPU")
             .build();
     }

@@ -9,9 +9,8 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import br.unesp.rc.MSReplicator.domain.MSCondominium.model.RentableArea;
-import br.unesp.rc.MSReplicator.domain.MSCondominium.repository.RentableAreaCondominiumRepository;
-import br.unesp.rc.MSReplicator.domain.MSReservation.repository.RentableAreaReservationRepository;
+import br.unesp.rc.CondominiumModel.model.RentableArea;
+import br.unesp.rc.CondominiumModel.repository.RentableAreaRepository;
 import br.unesp.rc.MSReplicator.domain.mapper.RentableAreaMapper;
 import br.unesp.rc.MSReplicator.domain.model.DebeziumMessage;
 import br.unesp.rc.MSReplicator.domain.model.DebeziumPayload;
@@ -23,10 +22,10 @@ public class RentableAreaConsumer {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    RentableAreaCondominiumRepository rentableAreaCondominiumRepository;
+    RentableAreaRepository rentableAreaCondominiumRepository;
     
     @Autowired
-    RentableAreaReservationRepository rentableAreaReservationRepository;
+    br.unesp.rc.ReservationModel.repository.RentableAreaRepository rentableAreaReservationRepository;
 
     @KafkaListener(topics = topic, groupId = group)
     public void consumer(ConsumerRecord<String, String> record) {
@@ -43,7 +42,7 @@ public class RentableAreaConsumer {
                     RentableArea rentableAreaPartial = payload.getAfter();
                     RentableArea rentableArea = rentableAreaCondominiumRepository.findById(rentableAreaPartial.getId()).get();
 
-                    br.unesp.rc.MSReplicator.domain.MSReservation.model.RentableArea reservationRentableArea = RentableAreaMapper.toRentableArea(rentableArea);
+                    br.unesp.rc.ReservationModel.model.RentableArea reservationRentableArea = RentableAreaMapper.toRentableArea(rentableArea);
                     rentableAreaReservationRepository.save(reservationRentableArea);
 
                     

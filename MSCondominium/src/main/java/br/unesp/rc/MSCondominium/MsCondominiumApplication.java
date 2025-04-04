@@ -8,7 +8,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication(scanBasePackages = {
 	"br.unesp.rc.CondominiumModel.model",
 	"br.unesp.rc.CondominiumModel.service",
-	"br.unesp.rc.CondominiumModel.repository"
+	"br.unesp.rc.CondominiumModel.repository",
+	"br.unesp.rc.MSCondominium"
 })
 @EntityScan("br.unesp.rc.CondominiumModel.model")
 @EnableJpaRepositories("br.unesp.rc.CondominiumModel.repository")
