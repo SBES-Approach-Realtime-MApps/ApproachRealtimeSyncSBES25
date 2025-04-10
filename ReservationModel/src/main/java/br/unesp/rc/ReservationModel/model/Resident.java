@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 public class Resident {
 
     @Id
-    private long id;
+    private String id;
 
     private String name;
     
@@ -19,8 +19,12 @@ public class Resident {
 
     private ResidentType residentType;
 
-    public long getId() {
+    public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {

@@ -1,5 +1,7 @@
 /home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/repository/UnitRepository.java
+/home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/repository/ResidentRepository.java
 /home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/model/Common.java
+/home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/service/CondominiumResidentService.java
 /home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/model/Resident.java
 /home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/model/RentableArea.java
 /home/dani/mestrado-academico/artigo-fernando-daniel/EstudoDeCaso/CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel/model/Specific.java

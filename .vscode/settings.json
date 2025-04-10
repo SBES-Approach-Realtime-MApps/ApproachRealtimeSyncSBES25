@@ -2,5 +2,6 @@
     "java.configuration.updateBuildConfiguration": "automatic",
     "java.project.sourcePaths": [
         "CondominiumModel/src/main/java/br/unesp/rc/CondominiumModel"
-    ]
+    ],
+    "java.compile.nullAnalysis.mode": "disabled"
 }

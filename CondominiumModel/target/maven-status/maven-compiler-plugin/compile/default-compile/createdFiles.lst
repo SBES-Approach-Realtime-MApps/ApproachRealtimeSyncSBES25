@@ -1,5 +1,7 @@
 br/unesp/rc/CondominiumModel/repository/UnitRepository.class
+br/unesp/rc/CondominiumModel/repository/ResidentRepository.class
 br/unesp/rc/CondominiumModel/repository/RentableAreaRepository.class
+br/unesp/rc/CondominiumModel/service/CondominiumResidentService.class
 br/unesp/rc/CondominiumModel/model/Common.class
 br/unesp/rc/CondominiumModel/model/Specific.class
 br/unesp/rc/CondominiumModel/repository/CondominiumRepository.class

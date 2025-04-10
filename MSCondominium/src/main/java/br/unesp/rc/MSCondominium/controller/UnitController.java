@@ -24,7 +24,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "Unit Controller", description = "CRUD operations for Unit")
-@RestController("UnitnewUnitController")
+@RestController("UnitController")
 @RequestMapping("/unit")
 public class UnitController {
     

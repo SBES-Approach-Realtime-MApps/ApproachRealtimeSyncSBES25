@@ -44,7 +44,7 @@ public class ReservationService {
         return reservations;
     }
 
-    public List<Reservation> findByResident(Long idResident) {
+    public List<Reservation> findByResident(String idResident) {
         Resident resident = residentRepository.findById(idResident).get();
         return reservationRepository.findByResident(resident);
     }

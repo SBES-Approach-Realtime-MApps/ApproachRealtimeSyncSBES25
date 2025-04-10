@@ -11,18 +11,18 @@ import br.unesp.rc.ReservationModel.repository.ResidentRepository;
 
 
 
-@Service
-public class ResidentService {
+@Service("reservationResidentService")
+public class ReservationResidentService {
     
     @Autowired
     ResidentRepository residentRepository;
 
-    public Iterable<Resident> findAll() {
+    public List<Resident> findAll() {
         List<Resident> residents = residentRepository.findAll(); 
         return residents;
     }
     
-    public Resident findById(Long id) {
+    public Resident findById(String id) {
         Optional<Resident> resident = residentRepository.findById(id);
         if (resident.isEmpty()) {
             throw new RuntimeException("Resident not found");
@@ -34,7 +34,7 @@ public class ResidentService {
         return newResident;
     }
 
-    public void delete(Long id) {
+    public void delete(String id) {
         residentRepository.deleteById(id);
     }
 

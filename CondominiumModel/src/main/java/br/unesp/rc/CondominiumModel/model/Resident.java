@@ -10,12 +10,20 @@ import jakarta.persistence.Id;
 public class Resident {
 
     @Id
-    private long id;
+    private String id;
     private String name;
 
     @Column(name = "birth_date", columnDefinition = "DATE")
     private Date birthDate;
     private ResidentType residentType;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
     public String getName() {
         return name;
     }

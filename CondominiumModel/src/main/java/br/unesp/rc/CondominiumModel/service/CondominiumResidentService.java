@@ -1,40 +1,36 @@
-package br.unesp.rc.ResidentModel.service;
+package br.unesp.rc.CondominiumModel.service;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import br.unesp.rc.ResidentModel.model.Resident;
-import br.unesp.rc.ResidentModel.repository.ResidentRepository;
+import br.unesp.rc.CondominiumModel.model.Resident;
+import br.unesp.rc.CondominiumModel.repository.ResidentRepository;
 
-
-
-@Service("residentResidentService")
-public class ResidentService {
-
+@Service
+public class CondominiumResidentService {
+    
     @Autowired
-    @Qualifier("residentResidentRepository")
-    private ResidentRepository residentRepository;
-
-    public Resident save(Resident resident) {
-        Resident newResident = residentRepository.save(resident);
-        return newResident;
-    }
+    ResidentRepository residentRepository;
 
     public List<Resident> findAll() {
         List<Resident> residents = residentRepository.findAll();
         return residents;
     }
-
+    
     public Resident findById(String id) {
-        Optional<Resident> optionalResident = residentRepository.findById(id);
-        if (optionalResident.isEmpty()) {
+        Optional<Resident> resident = residentRepository.findById(id);
+        if(resident.isEmpty()){
             throw new RuntimeException("Resident not found");
-        }
-        return optionalResident.get();
+        } 
+        return resident.get();
+    }
+
+    public Resident save(Resident resident) {
+        Resident newResident = residentRepository.save(resident);
+        return newResident;
     }
 
     public Resident update(Resident resident) {
@@ -49,25 +45,17 @@ public class ResidentService {
     }
 
     public void updateResident(Resident oldResident, Resident newResident) {
+
         if (newResident.getName() != null) {
             oldResident.setName(newResident.getName());
-        }
-
-        if (newResident.getResidentType() != null) {
-            oldResident.setResidentType(newResident.getResidentType());
         }
 
         if (newResident.getBirthDate() != null) {
             oldResident.setBirthDate(newResident.getBirthDate());
         }
 
-        if (newResident.getContact() != null) {
-            oldResident.setContact(newResident.getContact());
-        }
-
-        if (newResident.getAddress() != null) {
-            oldResident.setAddress(newResident.getAddress());
+        if (newResident.getResidentType() != null) {
+            oldResident.setResidentType(newResident.getResidentType());
         }
     }
-    
 }

@@ -9,6 +9,6 @@
       "database.password": "postpass",
       "database.dbname" : "MSCondominium", 
       "topic.prefix": "MSCondominium",
-      "table.include.list": "public.rentable_area"
+      "table.include.list": "public.rentable_area, public.area"
     }
   }

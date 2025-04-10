@@ -90,7 +90,7 @@ public class ReservationController {
         )
     })
     @GetMapping(value = "/findByResident/{idResident}", produces = "application/json")
-    public ResponseEntity<?> findByResident(@PathVariable Long idResident) {
+    public ResponseEntity<?> findByResident(@PathVariable String idResident) {
        
         try {
             List<Reservation> reservations = reservationService.findByResident(idResident);

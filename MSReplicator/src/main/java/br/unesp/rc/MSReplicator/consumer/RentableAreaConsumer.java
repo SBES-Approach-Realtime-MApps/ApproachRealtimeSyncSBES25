@@ -10,10 +10,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.unesp.rc.CondominiumModel.model.RentableArea;
-import br.unesp.rc.CondominiumModel.repository.RentableAreaRepository;
+import br.unesp.rc.CondominiumModel.service.RentableAreaService;
 import br.unesp.rc.MSReplicator.domain.mapper.RentableAreaMapper;
 import br.unesp.rc.MSReplicator.domain.model.DebeziumMessage;
 import br.unesp.rc.MSReplicator.domain.model.DebeziumPayload;
+import br.unesp.rc.ReservationModel.service.ReservationRentableAreaService;
 
 @Component
 public class RentableAreaConsumer {
@@ -22,10 +23,10 @@ public class RentableAreaConsumer {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    RentableAreaRepository rentableAreaCondominiumRepository;
+    RentableAreaService rentableAreaCondominiumService;
     
     @Autowired
-    br.unesp.rc.ReservationModel.repository.RentableAreaRepository rentableAreaReservationRepository;
+    ReservationRentableAreaService rentableAreaReservationService;
 
     @KafkaListener(topics = topic, groupId = group)
     public void consumer(ConsumerRecord<String, String> record) {
@@ -40,23 +41,28 @@ public class RentableAreaConsumer {
             switch (payload.getOperation()) {
                 case CREATE:
                     RentableArea rentableAreaPartial = payload.getAfter();
-                    RentableArea rentableArea = rentableAreaCondominiumRepository.findById(rentableAreaPartial.getId()).get();
+                    RentableArea rentableArea = rentableAreaCondominiumService.findById(rentableAreaPartial.getId());
 
                     br.unesp.rc.ReservationModel.model.RentableArea reservationRentableArea = RentableAreaMapper.toRentableArea(rentableArea);
-                    rentableAreaReservationRepository.save(reservationRentableArea);
+                    rentableAreaReservationService.save(reservationRentableArea);
 
                     
-                    System.out.println("Entidade criada: " + payload.getAfter());
+                    System.out.println("Entidade criada: " + reservationRentableArea);
                     break;
                 
                 case DELETE:
-                    rentableAreaReservationRepository.deleteById(payload.getBefore().getId());
+                    rentableAreaReservationService.delete(payload.getBefore().getId());
                     System.out.println("Entidade deletada: " + payload.getBefore());
                     break;
             
                 case UPDATE:
-                    rentableAreaReservationRepository.save(RentableAreaMapper.toRentableArea(payload.getAfter()));
-                    System.out.println("Entidade atualizada: " + payload.getAfter());
+
+                    RentableArea condominiumRentableArea = rentableAreaCondominiumService.findById(payload.getAfter().getId());
+
+                    br.unesp.rc.ReservationModel.model.RentableArea reservationRentableAreaUpdate = RentableAreaMapper.toRentableArea(condominiumRentableArea);
+
+                    rentableAreaReservationService.update(reservationRentableAreaUpdate);
+                    System.out.println("Entidade atualizada: " + reservationRentableAreaUpdate);
                     break;
                 default:
 

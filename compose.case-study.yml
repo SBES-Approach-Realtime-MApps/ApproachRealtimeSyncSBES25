@@ -1,0 +1,192 @@
+version: '3.7'
+services:
+  integrador-zookeeper:
+    container_name: integrador-zookeeper
+    image: confluentinc/cp-zookeeper:7.6.1
+    ports:
+      - '2181:2181'
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - integradorweb-net
+
+  kafka:
+    container_name: kafka
+    image: confluentinc/cp-kafka:7.6.1
+    depends_on:
+      - integrador-zookeeper
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_ZOOKEEPER_CONNECT: integrador-zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,OUTSIDE://0.0.0.0:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,OUTSIDE://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: true
+    networks:
+      - integradorweb-net
+
+  debezium:
+    container_name: debezium
+    image: debezium/connect:2.6.1.Final
+    depends_on:
+      - kafka
+    ports:
+      - "8083:8083"
+    environment:
+      GROUP_ID: 1
+      BOOTSTRAP_SERVERS: kafka:9092
+      CONFIG_STORAGE_TOPIC: connect_configs
+      OFFSET_STORAGE_TOPIC: connect_offsets
+      KEY_CONVERTER: org.apache.kafka.connect.storage.StringConverter
+      VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+    networks:
+      - integradorweb-net
+
+  debezium-ui:
+    hostname: debezium-ui
+    container_name: debezium-ui
+    image: debezium/debezium-ui:2.5
+    depends_on:
+      - debezium
+    ports:
+      - "28080:8080"
+    environment:
+      KAFKA_CONNECT_URIS: http://debezium:8083
+    networks:
+      - integradorweb-net
+
+
+  kafdrop:
+    hostname: kafdrop
+    container_name: kafdrop
+    image: obsidiandynamics/kafdrop:latest
+    ports:
+      - "29000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: kafka:9092
+    networks:
+      - integradorweb-net
+
+
+  postgres:
+    hostname: postgres
+    container_name: postgres
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postuser
+      POSTGRES_PASSWORD: postpass
+      POSTGRES_DB: MSCondominium
+    command: ["postgres", "-c", "wal_level=logical"]
+    networks:
+      - integradorweb-net
+
+  mariadb:
+    hostname: mariadb
+    container_name: mariadb
+    image: mariadb
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: MSReservation
+      MYSQL_USER: mariadbuser
+      MYSQL_PASSWORD: mariadbpass
+    networks:
+      - integradorweb-net
+
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: rootuser
+      MONGO_INITDB_ROOT_PASSWORD: rootpass
+      MONGO_INITDB_DATABASE: MSResident
+    command: ["/bin/bash", "/entrypoint.sh"]
+    networks:
+      - integradorweb-net
+    volumes:
+      - ./MongoConfig/mongo-keyfile:/data/configdb/mongo-keyfile
+      - ./MongoConfig/MongoEntrypoint.sh:/entrypoint.sh
+      - ./MongoConfig/mongod.conf:/etc/mongod.conf
+
+  MSCondominium:
+    container_name: MSCondominium
+    build:
+      context: ./MSCondominium
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/MSCondominium
+      SPRING_DATASOURCE_USERNAME: postuser
+      SPRING_DATASOURCE_PASSWORD: postpass
+    depends_on:
+      - postgres
+    networks:
+      - integradorweb-net
+    
+  MSReservation:
+    container_name: MSReservation
+    build:
+      context: ./MSReservation
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/MSReservation
+      SPRING_DATASOURCE_USERNAME: mariadbuser
+      SPRING_DATASOURCE_PASSWORD: mariadbpass
+    depends_on:
+      - mariadb
+    networks:
+      - integradorweb-net
+
+  MSReplicator:
+    container_name: MSReplicator
+    build:
+      context: ./MSReplicator
+      dockerfile: Dockerfile
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/MSReservation
+      SPRING_DATASOURCE_USERNAME: mariadbuser
+      SPRING_DATASOURCE_PASSWORD: mariadbpass
+    depends_on:
+      - debezium
+      - kafka
+      - mariadb
+      - postgres
+      - mongodb
+    networks:
+      - integradorweb-net
+
+  MSResident:
+    container_name: MSResident
+    build:
+      context: ./MSResident
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/MSCondominium
+      SPRING_DATASOURCE_USERNAME: postuser
+      SPRING_DATASOURCE_PASSWORD: postpass
+    depends_on:
+      - postgres
+    networks:
+      - integradorweb-net
+
+networks:
+  integradorweb-net:
+    driver: bridge

@@ -11,7 +11,7 @@ import br.unesp.rc.ReservationModel.repository.RentableAreaRepository;
 
 
 @Service
-public class RentableAreaService {
+public class ReservationRentableAreaService {
 
     @Autowired
     RentableAreaRepository rentableAreaRepository;

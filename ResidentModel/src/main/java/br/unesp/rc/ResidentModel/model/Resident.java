@@ -5,6 +5,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "resident")
 public class Resident extends Person {
 
+    public Resident() {
+        super();
+    }
+
     private ResidentType residentType;
                
 
