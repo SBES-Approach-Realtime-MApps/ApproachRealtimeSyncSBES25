@@ -2,7 +2,8 @@
 
 # Função para verificar se um conector existe
 conector_existe() {
-  curl -s http://debezium:8083/connectors/$1 | grep "$1" > /dev/null
+  status=$(curl -s -o /dev/null -w "%{http_code}" http://debezium:8083/connectors/$1)
+  [ "$status" -eq 200 ]
 }
 
 # Espera Kafka Connect estar pronto

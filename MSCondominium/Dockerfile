@@ -1,5 +1,5 @@
 # Imagem do java
-FROM openjdk:21-jdk-alpine
+FROM openjdk:21
 
 # Diretório de trabalho
 WORKDIR /app

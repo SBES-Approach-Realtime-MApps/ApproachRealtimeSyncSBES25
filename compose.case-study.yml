@@ -24,7 +24,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_ZOOKEEPER_CONNECT: integrador-zookeeper:2181
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,OUTSIDE://0.0.0.0:29092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,OUTSIDE://localhost:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,OUTSIDE://kafka:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,OUTSIDE:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: true
@@ -111,7 +111,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: rootuser
       MONGO_INITDB_ROOT_PASSWORD: rootpass
       MONGO_INITDB_DATABASE: MSResident
-    command: ["/bin/bash", "/entrypoint.sh"]
+    command: ["sh", "entrypoint.sh"]
     networks:
       - integradorweb-net
     volumes:
@@ -121,15 +121,17 @@ services:
 
   MSCondominium:
     container_name: MSCondominium
+    image: casestudy-mscondominium
     build:
       context: ./MSCondominium
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/MSCondominium
-      SPRING_DATASOURCE_USERNAME: postuser
-      SPRING_DATASOURCE_PASSWORD: postpass
+      POSTGRES_USER: postuser
+      POSTGRES_PASS: postpass
+      POSTGRES_HOST: postgres
+      POSTGRES_DATABASE: MSCondominium
     depends_on:
       - postgres
     networks:
@@ -137,15 +139,17 @@ services:
     
   MSReservation:
     container_name: MSReservation
+    image: casestudy-msreservation
     build:
       context: ./MSReservation
       dockerfile: Dockerfile
     ports:
       - "8082:8082"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/MSReservation
-      SPRING_DATASOURCE_USERNAME: mariadbuser
-      SPRING_DATASOURCE_PASSWORD: mariadbpass
+      MARIADB_HOST: mariadb
+      MARIADB_DATABASE: MSReservation
+      MARIADB_USER: mariadbuser
+      MARIADB_PASS: mariadbpass
     depends_on:
       - mariadb
     networks:
@@ -153,37 +157,43 @@ services:
 
   MSReplicator:
     container_name: MSReplicator
+    image: casestudy-msreplicator
     build:
       context: ./MSReplicator
       dockerfile: Dockerfile
     ports:
       - "8084:8084"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/MSReservation
-      SPRING_DATASOURCE_USERNAME: mariadbuser
-      SPRING_DATASOURCE_PASSWORD: mariadbpass
     depends_on:
       - debezium
       - kafka
       - mariadb
       - postgres
       - mongodb
+      - MSCondominium
+      - MSReservation
+      - MSResident
+    environment:
+      MARIADB_HOST: mariadb
+      POSTGRES_HOST: postgres
+      KAFKA_HOST: kafka
     networks:
       - integradorweb-net
 
   MSResident:
     container_name: MSResident
+    image: casestudy-msresident
     build:
       context: ./MSResident
       dockerfile: Dockerfile
     ports:
       - "8081:8081"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/MSCondominium
-      SPRING_DATASOURCE_USERNAME: postuser
-      SPRING_DATASOURCE_PASSWORD: postpass
+      MONGO_USER: rootuser
+      MONGO_PASSWORD: rootpass
+      MONGO_HOST: mongodb
+      MONGO_DATABASE: MSResident
     depends_on:
-      - postgres
+      - mongodb
     networks:
       - integradorweb-net
 

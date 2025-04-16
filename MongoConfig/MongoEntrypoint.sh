@@ -1,53 +1,42 @@
 #!/bin/bash
+set -e
 
-echo "Iniciando o MongoDB temporariamente..."
-mongod --dbpath /data/db --logpath /var/log/mongodb.log --fork --bind_ip_all
+echo ">> Corrigindo permissões do keyFile"
+chmod 600 /data/configdb/mongo-keyfile
+chown mongodb:mongodb /data/configdb/mongo-keyfile
 
-# Aguarda o MongoDB iniciar completamente
-echo "Aguardando MongoDB iniciar..."
-until mongosh --eval "db.runCommand({ping:1})" --quiet; do
-  echo "MongoDB ainda não está pronto, aguardando..."
-  sleep 3
+echo ">> Iniciando mongod sem autenticação para configuração inicial"
+mongod --replSet rs0 --bind_ip_all --fork --logpath /var/log/mongodb.log --logappend --noauth
+
+# Aguarda mongod subir
+echo ">> Aguardando MongoDB subir..."
+until mongosh --quiet --eval "db.runCommand({ ping: 1 }).ok" | grep -q "1"; do
+    echo "Ainda aguardando..."
+    sleep 2
 done
 
-echo "Verificando se usuário admin já existe..."
-USER_EXISTS=$(mongosh --quiet --eval "db.getUser('$MONGO_INITDB_ROOT_USERNAME') !== null")
+echo ">> Inicializando Replica Set"
+mongosh <<EOF
+rs.initiate({
+  _id: "rs0",
+  members: [{ _id: 0, host: "mongodb:27017" }]
+})
+EOF
 
-if [ "$USER_EXISTS" == "false" ]; then
-  echo "Criando usuário admin..."
-  mongosh <<EOF
+echo ">> Criando usuário root"
+mongosh <<EOF
 use admin
 db.createUser({
-  user: "$MONGO_INITDB_ROOT_USERNAME",
-  pwd: "$MONGO_INITDB_ROOT_PASSWORD",
+  user: "${MONGO_INITDB_ROOT_USERNAME:-admin}",
+  pwd: "${MONGO_INITDB_ROOT_PASSWORD:-admin123}",
   roles: [{ role: "root", db: "admin" }]
 })
 EOF
-else
-  echo "Usuário já existe. Pulando criação."
-fi
 
-echo "Desligando MongoDB temporário..."
-mongod --shutdown
+echo ">> Parando mongod temporário"
+mongosh admin <<EOF
+db.shutdownServer()
+EOF
 
-echo "Iniciando o MongoDB com Replica Set..."
-mongod --replSet rs0 --keyFile /data/configdb/mongo-keyfile --bind_ip_all &
-
-# Aguarda o MongoDB iniciar completamente
-echo "Aguardando MongoDB iniciar..."
-until mongosh --eval "db.runCommand({ping:1})" --quiet; do
-  echo "MongoDB ainda não está pronto, aguardando..."
-  sleep 3
-done
-
-echo "Verificando o estado do Replica Set..."
-mongosh --eval "rs.status()" --quiet > /dev/null 2>&1
-if [ $? -ne 0 ]; then
-  echo "Iniciando o Replica Set..."
-  mongosh --eval "rs.initiate({_id: 'rs0', members: [{_id: 0, host: 'mongodb:27017'}]})"
-else
-  echo "Replica Set já configurado."
-fi
-
-# Mantém o MongoDB rodando
-wait
+echo ">> Reiniciando mongod com autenticação"
+exec mongod --replSet rs0 --auth --keyFile /data/configdb/mongo-keyfile --bind_ip_all --logpath /var/log/mongodb.log --logappend
