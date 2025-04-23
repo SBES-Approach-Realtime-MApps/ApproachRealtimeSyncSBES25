@@ -48,32 +48,6 @@ services:
     networks:
       - integradorweb-net
 
-  debezium-ui:
-    hostname: debezium-ui
-    container_name: debezium-ui
-    image: debezium/debezium-ui:2.5
-    depends_on:
-      - debezium
-    ports:
-      - "28080:8080"
-    environment:
-      KAFKA_CONNECT_URIS: http://debezium:8083
-    networks:
-      - integradorweb-net
-
-
-  kafdrop:
-    hostname: kafdrop
-    container_name: kafdrop
-    image: obsidiandynamics/kafdrop:latest
-    ports:
-      - "29000:9000"
-    environment:
-      KAFKA_BROKERCONNECT: kafka:9092
-    networks:
-      - integradorweb-net
-
-
   postgres:
     hostname: postgres
     container_name: postgres
