@@ -9,7 +9,7 @@ conector_existe() {
 # Espera Kafka Connect estar pronto
 echo "Aguardando Kafka Connect..."
 until curl -s http://debezium:8083/connectors > /dev/null; do
-  sleep 2
+  sleep 5
 done
 
 # Cria o conector do MongoDB, se não existir
@@ -23,7 +23,7 @@ else
 fi
 
 # Cria o conector do PostgreSQL, se não existir
-if conector_existe "postgres-connector"; then
+if conector_existe "postgresql-connector"; then
   echo "Conector PostgreSQL já existe, pulando criação..."
 else
   echo "Criando conector PostgreSQL..."
