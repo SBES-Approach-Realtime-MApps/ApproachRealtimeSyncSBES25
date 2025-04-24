@@ -2,7 +2,7 @@
 
 Represents the microservice that controls the condominium network, the registration of its respective units, residents, and public areas of the condominium. The class diagram is shown below.
 
-![Error loading image](../MSCondominio.png)
+![Error loading image](../images/MSCondominium.png)
 
 The microservice represented by the class diagram provides the following endpoints:
 

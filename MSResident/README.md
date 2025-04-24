@@ -2,7 +2,7 @@
 
 The microservice responsible for managing the condominium residents. The class diagram is shown below:
 
-![Error loading image](../MSMorador.png)
+![Error loading image](../images/MSResident.png)
 
 The microservice represented by the class diagram provides the following endpoints:
 - General and specific search, insertion, update, and removal of <b>residents</b>
