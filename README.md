@@ -11,11 +11,7 @@ The choice of this functionality is justified by the fact that it requires data 
 
 # Setup
 
-To instantiate our execution, you must first clone the repository:
-
-        git clone https://github.com/DanielAlmeida19/CaseStudyArticleSBES
-
-DInside the folder of the cloned repository, you need to run the one that contains the necessary applications along with the microservices:
+After clone this repository, inside the folder of the cloned repository, you need to run the one that contains the necessary applications along with the microservices:
 
         docker compose -f 'compose.case-study.yml' up -d --build
 
