@@ -20,6 +20,6 @@ DInside the folder of the cloned repository, you need to run the one that contai
         docker compose -f 'compose.case-study.yml' up -d --build
 
 For execution, it is recommended to have:
-- Linux kerner 6.0 + | Windows 10 or higher
+- Linux kerner 6.0 + | Windows 10 or higher | MacOs Sequoia 15.4+
 - Docker 26.0+ 
 - 8GB of RAM
