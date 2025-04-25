@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -102,34 +101,4 @@ public class RentableAreaController {
         }
     }
 
-
-    @Operation(
-        summary = "Delete rentable area",
-        description = "Delete a rentable area by id specified in path"
-    )
-    @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "Returns OK"
-        ),
-        @ApiResponse(
-            responseCode = "400",
-            description = "Bad Request",
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = Error.class)
-            )
-        )
-    })
-    @DeleteMapping(value = "/delete/{id}", produces = "application/json")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
-        try {
-            rentableAreaService.delete(id);
-
-            return new ResponseEntity<Void>(HttpStatus.OK);
-        } catch (Exception e) {
-
-            return new ResponseEntity<Error>(new Error(e), HttpStatus.BAD_REQUEST);
-        }
-    }
 }

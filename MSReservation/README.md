@@ -6,6 +6,12 @@ Microservice for managing reservations of rentable areas, following the logic th
 
 Note the difference between the resident and rentable area entities in the reservation microservice compared to the respective source data microservices. The notation that indicates it comes from another microservice is the white background of the class.
 
+The microservice represented by the class diagram provides the following endpoints:
+
+- General and specific search, insertion, update, and removal for <b>reservations</b>;
+- General and specific search for <b>residents</b>;
+- General and specific search for <b>rentable areas</b>;
+
 Implementation details are as follows:
 - OpenJDK 21
 - SpringFramework 3.4.4
