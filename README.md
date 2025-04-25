@@ -7,7 +7,12 @@ A system for managing a network of condominiums must, by default, include mechan
 
 This is the core idea behind the CondSys condominium system—a system already known and monitored by the study group that authored this paper—focusing on a specific functionality: <b>Reserving a rentable area</b>.
 
-The choice of this functionality is justified by the fact that it requires data from different microservices, separated from the monolithic version of CondSys, aiming to maintain the Single Responsibility Principle for each microservice. The documentations of the each microsservices are in your respective directories.
+The choice of this functionality is justified by the fact that it requires data from different microservices, separated from the monolithic version of CondSys, aiming to maintain the Single Responsibility Principle for each microservice. The documentations of the each microsservices are in your respective directories.</br>
+
+[MSCondominium Docs](MSCondominium/README.md)</br>
+[MSReservation Docs](MSReservation/README.md)</br>
+[MSResident Docs](MSResident/README.md)</br>
+[MSReplicator Docs](MSReplicator/README.md)
 
 # Setup
 
