@@ -1,7 +1,7 @@
 # MSReplicator
 This is the microservice responsible for listening to the Kafka topic related to changes in the databases of the respective entity to be propagated. Within this module, it also deserializes the message sent from Debezium to Kafka into an entity for propagation.
 
-The system workflow and the propagation process are better presented in the article.
+The system workflow and the propagation process are better presented in the paper.
 
 Implementation details are as follows:
 - OpenJDK 21

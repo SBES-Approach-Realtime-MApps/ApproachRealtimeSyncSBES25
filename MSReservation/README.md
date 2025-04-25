@@ -12,6 +12,10 @@ The microservice represented by the class diagram provides the following endpoin
 - General and specific search for <b>residents</b>;
 - General and specific search for <b>rentable areas</b>;
 
+Residents do not have insertion, update, or removal endpoints because their data is replicated from another microservice (MSResident).
+
+Rentable areas do not have insertion, update, or removal endpoints because their data is replicated from another microservice (MSCondominium)
+
 Implementation details are as follows:
 - OpenJDK 21
 - SpringFramework 3.4.4

@@ -1,5 +1,5 @@
 # A Real-time data synchronization approach for high-availability micro applications
-Documentation of the case study explained in the arcticle</br>
+Documentation of the case study explained in the paper</br>
 
 # CondSys
 
