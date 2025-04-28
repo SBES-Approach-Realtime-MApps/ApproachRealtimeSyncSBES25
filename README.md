@@ -20,6 +20,10 @@ After clone this repository, inside the folder of the cloned repository, you nee
 
         docker compose -f 'compose.case-study.yml' up -d --build
 
+Some times, its possible the MSReservation can be disconnected of the MariaDB because the CPU use is very high, in this case, try an especific command line for reactivate this container
+
+        docker start MSReservation
+
 For continues the tests for our approuch, see the [Test Instance](docs/example.md)
 
 For execution, it is recommended to have:
