@@ -1,8 +1,8 @@
 # Test Instances
 
-Para atestar a replicação, iremos usar os endpoint prontos com comandos no shell para adicionar, inspecionar e deletar instâncias a serem propagadas entre as bases de dados. 
+To verify replication, we will use ready-made endpoints with shell commands to add, inspect, and delete instances to be propagated between the databases.
 
-Para tal, é importante explicitar que o estudo de caso no nosso docker compose está configurado da seguinte maneira, afim de confirmar a origem e destino das URLs:
+For this, it is important to clarify that the case study in our Docker Compose is configured as follows, in order to confirm the source and destination of the URLs:
 
 - MSCondominium: expose port 8080
 - MSResident: expose port 8081
@@ -11,36 +11,36 @@ Para tal, é importante explicitar que o estudo de caso no nosso docker compose 
 
 ## Resident Example
 
-Inicialmente para confirmar a execução da replicação, vamos conferir se todos os bancos de dados estão vazios e não possuem moradores cadastrados. Primeiro, com todos os containers gerenciados pelo docker compose, vamos aferir que o banco de dados original do microsserviço de moradores está vazio utilizando um endpoint de busca geral.
+Initially, to confirm the replication execution, we will check if all databases are empty and have no registered residents. First, with all containers managed by Docker Compose, we will verify that the original database of the resident microservice is empty using a general search endpoint.
 
-Endpoint de busca geral de moradores para <b>MSResident</b>:
+General search endpoint for residents in <b>MSResident</b>:
 
-    curl -X GET http://localhost:8081/resident/findAll \ 
+    curl -X GET http://localhost:8081/resident/findAll \
        -H "Content-Type: application/json"
 
-A resposta desta requisição deve ser uma lista JSON vazia, como: `[]`
+The response to this request should be an empty JSON list, like: `[]`
 
-Os moradores persistidos na base de dados dos moradores (MongoDB) são transmitidos para as bases do condomínio (Postgres) e reserva (MariaDB). Vamos confirmar que essas bases de dados também estão vazias realizando uma busca geral novamente para os outros microsserviços, utilizando seus respectivos endpoints.
+Residents persisted in the resident service database (MongoDB) are transmitted to the condominium (Postgres) and reservation (MariaDB) databases. We will confirm that these databases are also empty by performing a general search again for the other microservices, using their respective endpoints.
 
-Endpoint de busca geral de moradores para <b>MSCondominium</b>:
+General search endpoint for residents in <b>MSCondominium</b>:
 
     curl -X GET http://localhost:8080/resident/findAll \
        -H "Content-Type: application/json"
 
-Endpoint de busca geral de moradores para <b>MSReservation</b>:
+General search endpoint for residents in <b>MSReservation</b>:
 
     curl -X GET http://localhost:8082/resident/findAll \
        -H "Content-Type: application/json"
 
-Ambos os endpoints também devem retornar listas JSON vazias.
+Both endpoints should also return empty JSON lists.
 
-### Testando inserção
+### Testing Insertion
 
-Após aferir que essas bases de dados estão vazias, vamos adicionar um morador para podermos visualizarmos a replicação deste dado para as outras bases. Usemos o endpoint de inserção do microsserviço de moradores.
+After verifying that these databases are empty, we will add a resident so that we can observe the replication of this data to the other databases. Let's use the insertion endpoint of the resident microservice.
 
-Endpoint de inserção de moradores para <b>MSResident</b>:
+Resident insertion endpoint for <b>MSResident</b>:
 
-    curl -X POST http://localhost:8081/resident/save \    
+    curl -X POST http://localhost:8081/resident/save \
        -H "Content-Type: application/json" \
        -d '{
             "name": "John Due",
@@ -72,7 +72,7 @@ Endpoint de inserção de moradores para <b>MSResident</b>:
             "residentType": "OWNER"
         }'
 
-A resposta desse endpoint deve ser a entidade criada no banco de dados, Retornando algo como o exemplo de reposta abaixo, normalmente sem nenhum tipo de formatação:
+The response from this endpoint should be the entity created in the database, returning something like the example below, usually without any formatting:
 
 `{  "id": "680b994a935da176e73f6389",
             "name": "John Due",
@@ -104,170 +104,169 @@ A resposta desse endpoint deve ser a entidade criada no banco de dados, Retornan
             "residentType": "OWNER"
         }`
 
-Note que foi devolvido um campo a mais com o nome <i>id</i>, que representa o identificador que o Spring Data MongoDB cria ao persistir um objeto.
+Notice that an additional field called <i>id</i> has been returned, which represents the identifier that Spring Data MongoDB creates when persisting an object.
 
-Vamos verificar se ele foi adicionado a base de dados de <b>MSResident</b>, podemos utilizar ou o endpoint de busca geral que já mostramos ou o endpoint de busca por id.
+Let's verify if it was added to the <b>MSResident</b> database. We can use either the general search endpoint we have already shown or the search-by-id endpoint.
 
-Endpoint de busca específica de moradores de <b>MSResident</b>
+Specific search endpoint for residents in <b>MSResident</b>:
 
-    curl -X GET http://localhost:8081/resident/findById/putYourIdHere \ 
+    curl -X GET http://localhost:8081/resident/findById/putYourIdHere \
        -H "Content-Type: application/json"
 
-Ou use a busca geral:
+Or use the general search:
 
     curl -X GET http://localhost:8081/resident/findAll \
        -H "Content-Type: application/json"
 
-A resposta deste endpoint deve conter o mesmo dado da resposta do endpoint da inserção, com a única diferença que a busca geral retornará o objeto dentro de uma lista JSON (`[{object}]`). Após confirmar que o objeto foi criado nessa base de dados,vamos aferir se a propagação funcionou procurando nas bases dos outros microsserviços.
+The response from this endpoint should contain the same data as the insertion endpoint response, with the only difference being that the general search will return the object inside a JSON list (`[{object}]`). After confirming that the object was created in this database, let's verify if the propagation worked by searching in the databases of the other microservices.
 
-Endpoint de busca específica de moradores de <b>MSCondominium</b>:
+Specific search endpoint for residents in <b>MSCondominium</b>:
 
     curl -X GET http://localhost:8080/resident/findById/putYourIdHere \
        -H "Content-Type: application/json"
 
-Ou use a busca geral:
+Or use the general search:
 
     curl -X GET http://localhost:8080/resident/findAll \
        -H "Content-Type: application/json"
 
-O retorno deve ser algo parecido com:
+The return should be something like:
 
 `{"id":"680b994a935da176e73f6389","name":"John Due","birthDate":"2003-05-19T00:00:00.000+00:00","residentType":"OWNER"}`
 
-Aqui existe uma diferença relevante no retorno, note como a entidade foi transformada para conter apenas os dados pertinentes ao microsserviço de condomínios, informações como email, senha, endereços e contato não existem mais. Idem para o microsserviço de reserva
+There is an important difference in the return here: notice how the entity was transformed to contain only the data relevant to the condominium microservice. Information such as email, password, addresses, and contact details no longer exist. The same applies to the reservation microservice.
 
-Endpoint de busca específica de moreadores de <b>MSReservation</b>:
+Specific search endpoint for residents in <b>MSReservation</b>:
 
-    curl -X GET http://localhost:8082/resident/findById/putYourIdHere \       
+    curl -X GET http://localhost:8082/resident/findById/putYourIdHere \
        -H "Content-Type: application/json"
 
-Ou use a busca geral:
+Or use the general search:
 
     curl -X GET http://localhost:8082/resident/findAll \
        -H "Content-Type: application/json"
 
-O retorno deve ser algo parecido com: 
+The return should be something like:
 
 `{"id":"680b994a935da176e73f6389","name":"John Due","birthDate":"2003-05-19T00:00:00.000+00:00","residentType":"OWNER"}`
 
-Note que, tanto em MSReservation como em MSCondominium foram adicionados às respectivas bases de dados o morador inserido ainda que eles não tenham endpoints para inserção e nem MSResidente possui uma instrução direta para salvar em outras bases que não seja a sua própria. A replicação foi feita pela nossa abordagem a nível de base de dados.
+Note that, in both MSReservation and MSCondominium, the resident was added to their respective databases even though they do not have insertion endpoints and MSResident has no direct instruction to save data to databases other than its own. Replication was handled by our database-level approach.
 
-### Testando atualização
 
-Vamos agora testar atualizar a entidade morador que criamos na base de dados original e ver como essas mudanças se refletem na base de dados dos microsserviços, por razões óbvias, as alterações precisam ser de atributos que constam nas outras bases de dados ou que são derivados destes.
+### Testing Update
 
-Endpoint de atualização de moradores para <b>MSResident</b>:
+Now let's test updating the resident entity we previously created in the original database and see how these changes are reflected in the microservices' databases. Obviously, the updates must affect attributes that are present in the other databases or that are derived from them.
+
+Update resident endpoint for <b>MSResident</b>:
 
     curl -X PUT http://localhost:8081/resident/update \
        -H "Content-Type: application/json" \
        -d '{
-            {
                 "id": "putYourIdHere",
                 "name": "John Due Two",     
                 "residentType": "TENANT"
-            }
         }'
 
-Essa requisição retornará a entidade atualizada, sendo parecidíssima com o retorno da busca específica, já com os campos modificados. Vale lembrar que já é assim que a entidade está na base de dados, portanto, pularemos a etapa de busca em <b>MSResident</b>, mas você pode repeti-la se quiser. 
+This request will return the updated entity, very similar to the specific search response, but now reflecting the modified fields. Remember that this is already how the entity is saved in the database, so we will skip the search step in <b>MSResident</b> — although you can repeat it if you wish.
 
-O retorno dessa requisição pode ser algo como:
+The response to this request might look like:
 
-`{"id":"680b994a935da176e73f6389","name":"John Due Two","birthDate":"2003-05-19T00:00:00.000+00:00","contact":{"homePhone":null,"businessPhone":"994512313","cellPhone":"997502563","email":"daniel.almeida19@unesp.br"},"address":[{"street":"Rua irma Diva Patarra","number":"770","neighborhood":"Jardim Ipiratininga","city":"Araras","state":"São Paulo","zipCode":"13604065"},{"street":"Av 13","number":"157","neighborhood":"Centro","city":"Santa Gertrudes","state":"São Paulo","zipCode":"13510000"}],"residentType":"TENANT"}`
+`{"id":"680b994a935da176e73f6389","name":"John Due Two","birthDate":"2003-05-19T00:00:00.000+00:00","contact":{"homePhone":null,"businessPhone":"994512313","cellPhone":"997502563","email":"JonhDue@gmail.com"},"address":[{"street":"Very Crazy Street","number":"770","neighborhood":"New Random Neghborhood","city":"Washington","state":"Washington DC","zipCode":"15154646513"},{"street":"Av 13","number":"157","neighborhood":"Centro","city":"Santa Gertrudes","state":"São Paulo","zipCode":"13510000"}],"residentType":"TENANT"}`
 
-Note como o nome e o tipo de morador já foram atualizados na base de dados original. Vamos verificar agora a replicação da atualização da base de dados, procurando pelo nosso morador nos outros microsserviços, usando os endpoints que já vimos antes.
+Notice how the name and resident type have already been updated in the original database. Now let's check the replication of this update across the microservices' databases by searching for our resident using the endpoints we previously saw.
 
-Use a busca específica de moradores de <b>MSCondominium</b>:
+Use the specific search for residents in <b>MSCondominium</b>:
 
     curl -X GET http://localhost:8080/resident/findById/putYourIdHere \
        -H "Content-Type: application/json"
 
-Ou use a busca geral:
+Or use the general search:
 
     curl -X GET http://localhost:8080/resident/findAll \
        -H "Content-Type: application/json"
 
-O retorno da requisição será algo como: 
+The response should look like:
 
 `{"id":"680b994a935da176e73f6389","name":"John Due Two","birthDate":"2003-05-19T00:00:00.000+00:00","residentType":"TENANT"}`
 
-Note que a atualização de nome e do tipo de morador já foi feita para a base de dados de <b>MSCondominium</b>. O mesmo teste pode ser feito para <b>MSReservation</b>
+Notice that the name and resident type have already been updated in the <b>MSCondominium</b> database. The same test can be done for <b>MSReservation</b>.
 
-Use a busca específica de moreadores de <b>MSReservation</b>:
+Use the specific search for residents in <b>MSReservation</b>:
 
-    curl -X GET http://localhost:8082/resident/findById/putYourIdHere \       
+    curl -X GET http://localhost:8082/resident/findById/putYourIdHere \
        -H "Content-Type: application/json"
 
-Ou use a busca geral:
+Or use the general search:
 
     curl -X GET http://localhost:8082/resident/findAll \
        -H "Content-Type: application/json"
 
-O retorno deve ser algo parecido com: 
+The response should look like:
 
 `{"id":"680b994a935da176e73f6389","name":"John Due Two","birthDate":"2003-05-19T00:00:00.000+00:00","residentType":"TENANT"}`
 
 
-### Testando deleção
+### Testing Deletion
 
-Vamos agora testar a deleção de um morador na base de dados original e ver como essa mudança reflete na base de dados dos outros microsserviços.
+Now let's test the deletion of a resident from the original database and see how this change is reflected in the databases of the other microservices.
 
-Endpoint de deleção de moradores de <b>MSResident</b>:
+Resident deletion endpoint for <b>MSResident</b>:
 
     curl -X DELETE http://localhost:8081/resident/delete/putYourIdHere \
         -H "Content-Type: application/json"
 
-Esta requisição não gerará nenhum retorno. Vamos averiguar se a base de dados original realmente deixou de conter o morador que continha anteriormente.
+This request will not return any response body. Let's check if the original database actually no longer contains the previously existing resident.
 
-Use o endpoint de busca geral de moradores para MSResident:
+Use the general resident search endpoint for <b>MSResident</b>:
 
     curl -X GET http://localhost:8081/resident/findAll \
         -H "Content-Type: application/json"
 
-A resposta deste endpoint deve ser lista vazia: `[]`
+The response from this endpoint should be an empty list: `[]`
 
-Vamos conferir agora se a deleção foi propagada para as bases de dados dos outros microsserviços.
+Now let's verify if the deletion has been propagated to the databases of the other microservices.
 
-Use o endpoint de busca geral de moradores de <b>MSCondominium</b>:
+Use the general resident search endpoint for <b>MSCondominium</b>:
 
     curl -X GET http://localhost:8080/resident/findAll \
        -H "Content-Type: application/json"
 
-A resposta deste endpoint deve ser lista vazia: `[]`
+The response from this endpoint should be an empty list: `[]`
 
-Use o endpoint de busca geral de moradores de <b>MSReservation</b>:
+Use the general resident search endpoint for <b>MSReservation</b>:
 
     curl -X GET http://localhost:8082/resident/findAll \
        -H "Content-Type: application/json"
 
-A resposta deste endpoint deve ser lista vazia: `[]`
+The response from this endpoint should be an empty list: `[]`
 
-Note que, em ambos os casos a deleção foi propaga a nível de base de dados pela nossa abordagem.
+Notice that in all cases, the deletion was successfully propagated at the database level by our approach.
 
 ## Rentable Area Example
 
-Inicialmente para confirmar a execução da replicação, vamos conferir se todos os bancos de dados estão vazios e não possuem áreas alugáveis cadastradas. Primeiro, com todos os containers gerenciados pelo docker compose em execução, vamos aferir que o banco de dados original do microsserviço de condomínio está vazio utilizando um endpoint de busca geral.
+To initially confirm the replication process, let's verify that all databases are empty and that no rentable areas have been registered. First, with all containers managed by Docker Compose running, let's check that the original database of the condominium microservice is empty by using a general search endpoint.
 
-Endpoint de busca geral de áreas alugáveis para <b>MSCondominium</b>:
+General rentable area search endpoint for <b>MSCondominium</b>:
 
-    curl -X GET http://localhost:8080/rentableArea/findAll \ 
+    curl -X GET http://localhost:8080/rentableArea/findAll \
        -H "Content-Type: application/json"
 
-A resposta desta requisição deve ser uma lista JSON vazia, como: `[]`
+The response to this request should be an empty JSON list, like: `[]`
 
-As áreas alugáveis persistidas na base de dados dos condomínios (Postgres) são transmitidos para a base de reserva (MariaDb). Vamos confirmar que essa base de dados também está vazia realizando uma busca geral novamente para o microsserviço de reserva.
+The rentable areas persisted in the condominium database (Postgres) are transmitted to the reservation database (MariaDB). Let's confirm that this database is also empty by performing another general search for the reservation microservice.
 
-Endpoint de busca geral de áreas alugáveis para <b>MSReservation</b>:
+General rentable area search endpoint for <b>MSReservation</b>:
 
     curl -X GET http://localhost:8082/rentableArea/findAll \
        -H "Content-Type: application/json"
 
-A resposta desta requisição deve ser uma lista JSON vazia também.
+The response to this request should also be an empty list.
 
-### Testando Inserção
+### Testing Insertion
 
-Após aferir que essas bases de dados estão vazias, vamos adicionar uma área alugável para podermos visualizarmos a replicação deste dado para a outra base. Para inserirmos uma área alugável, é necessário inserirmos também uma instância de condomínio.
+After confirming that these databases are empty, let's add a rentable area so we can observe the replication of this data to the other database. To insert a rentable area, we first need to insert a condominium instance.
 
-Endpoint de inserção de condomínios de <b>MSCondomínio</b>
+Condominium insertion endpoint for <b>MSCondominium</b>:
 
     curl -X POST http://localhost:8080/condominium/save \
         -H "Content-Type: application/json" \
@@ -276,13 +275,13 @@ Endpoint de inserção de condomínios de <b>MSCondomínio</b>
 	        "condominiumType": "HOUSE"
         }'
 
-O retorno da requisição será a entidade criada no banco de dados, deve ser algo como:
+The response from the request will be the created entity in the database, something like:
 
 `{"id":1,"name":"Cond","condominiumType":"HOUSE"}`
 
-Agora, iremos adicionar uma área alugável associada à este condomínio para verificarmos o comportamente de replicação para a base de dados de outro microsserviço
+Now, we will add a rentable area associated with this condominium to verify the replication behavior to the other microservice's database.
 
-Endpoint de criação de área alugável para <b>MSCondominium</b>:
+Rentable area creation endpoint for <b>MSCondominium</b>:
 
     curl -X POST http://localhost:8080/rentableArea/save \
         -H "Content-Type: application/json" \
@@ -297,67 +296,67 @@ Endpoint de criação de área alugável para <b>MSCondominium</b>:
             "capacity": 6
         }'
 
-Deve retornar algo como: 
+The response should look like:
 
-`{"id":1,"name":"Outro salao","size":50,"condominium":{"id":1,"name":null,"condominiumType":null},"location":"aqui","value":40.0,"capacity":6}%`
+`{"id":1,"name":"Outro salao","size":50,"condominium":{"id":1,"name":null,"condominiumType":null},"location":"aqui","value":40.0,"capacity":6}`
 
-O retorno deste endpoint deve ser a área alugável salva na base de dados. Note que o retorno já possui o campo <i>id</i>, criado automáticamente pelo Spring ao persistir a entidade. Para confirmar que a área alugável foi persistida vamos realizar uma busca na base de dados de <b>MSCondominium</b>
+The response from this endpoint should be the rentable area saved in the database. Notice that the response already contains the <i>id</i> field, which is automatically generated by Spring when persisting the entity. To confirm that the rentable area was saved, let's perform a search in the <b>MSCondominium</b> database:
 
-Endpoint de busca específica de áreas alugáveis para <b>MSCondominium</b>
+Specific rentable area search endpoint for <b>MSCondominium</b>:
 
     curl -X GET http://localhost:8080/rentableArea/findById/putYourIdHere \
         -H "Content-Type: application/json"
 
-Ou use a busca geral:
+Or use the general search:
 
     curl -X GET http://localhost:8080/rentableArea/findAll \
        -H "Content-Type: application/json"
 
-O retorno deve ser algo como:
+The response should look like:
 
 `{"id":1,"name":"Outro salao","size":50,"condominium":{"id":1,"name":"Cond","condominiumType":"HOUSE"},"location":"aqui","value":40.0,"capacity":6}`
 
-Note que o retorno agora já conseguiu associar o objeto do condomínio à área alugável simplemsmente pelo id, manipulação feita pelo Spring. Agora vamos averiguar se a área alugável foi replicada para o microsserviço de reserva:
+Notice that the response now successfully associates the condominium object with the rentable area simply by its id — a manipulation handled by Spring. Now, let's check if the rentable area has been replicated to the reservation microservice:
 
-Endpoint para busca específica de áreas alugáveis para <b>MSReservation</b>:
+Specific rentable area search endpoint for <b>MSReservation</b>:
 
     curl -X GET http://localhost:8082/rentableArea/findById/putYourIdHere \
        -H "Content-Type: application/json"
 
-Ou use a busca geral:
+Or use the general search:
 
     curl -X GET http://localhost:8082/rentableArea/findAll \
        -H "Content-Type: application/json"
 
-O retorno deve ser algo como:
+The response should look like:
 
 `{"id":1,"name":"Outro salao","size":50,"capacity":6,"value":40.0}`
 
-Note que não apenas a replição aconteceu, como também a área alugável replicada não possui todas as característacas da área alugável original, apenas os atributos pertinentes ao microsserviço de reserva.
+Notice that not only was the replication successful, but also that the replicated rentable area does not contain all the original attributes — only the attributes relevant to the reservation microservice.
 
-### Testando deleção
+### Testing Deletion
 
-Vamos testar como a deleção da área alugável na base original (MSCondominium) pode ser propagada para o microsserviço de reserva (MSReservation). Vamos apagar a área alugável da base original.
+Let's test how the deletion of a rentable area in the original database (MSCondominium) can be propagated to the reservation microservice (MSReservation). We will delete the rentable area from the original database.
 
-Endpoint para deleção de áreas alugáveis para <b>MSCondominium</b>:
+Rentable area deletion endpoint for <b>MSCondominium</b>:
 
     curl -X DELETE http://localhost:8080/rentableArea/delete/putYourIdHere \
         -H "Content-Type: application/json"
 
-Esta requisição não possui retorno, vamos verificar então se a nossa área alugável realmente foi apagada da base de dados de origem.
+This request does not have a response body, so let's verify whether our rentable area was actually deleted from the source database.
 
-Use a busca geral:
+Use the general search:
 
     curl -X GET http://localhost:8080/rentableArea/findAll \
         -H "Content-Type: application/json"
 
-O retorno deve ser uma lista JSON vazia: `[]`
+The response should be an empty JSON list: `[]`
 
-Vamos aferir agora se a deleção foi replicada para o microsserviço de reserva
+Now, let's verify if the deletion was replicated to the reservation microservice.
 
-Use a busca geral:
+Use the general search:
 
     curl -X GET http://localhost:8082/rentableArea/findAll \
        -H "Content-Type: application/json"
 
-A resposta tambpem será uma lista JSON vazia, assim confirmando a replicação da deleção da área alugável da base de dados do microsserviço de condomínios para o de reserva.
+The response should also be an empty JSON list, thus confirming the replication of the rentable area deletion from the condominium microservice database to the reservation microservice database.
