@@ -334,6 +334,40 @@ The response should look like:
 
 Notice that not only was the replication successful, but also that the replicated rentable area does not contain all the original attributes — only the attributes relevant to the reservation microservice.
 
+### Testing Update
+
+Now lets try update a Rentable Area in the original database and observe how this affect anothers database with Rentable Areas.
+
+Rentable Area update endpoint for <b>MSCondominium</b>:
+
+    curl -X PUT http://localhost:8080/rentableArea/update \
+        -H "Content-Type: application/json" \
+        -d '{
+            "id":"putYourIdHere",
+            "name": "Saloon",
+            "value": 50
+        }'
+
+The response is the updated entity, should look like:
+
+`{"id":2,"name":"Saloon","size":30,"condominium":{"id":1,"name":"Cond","condominiumType":"HOUSE"},"location":"aqui","value":50.0,"capacity":6}`
+
+Now, we can try search this entity in the database of the Reservation microservice.
+
+Use the specific search
+
+    curl -X GET http://localhost:8082/rentableArea/findById/putYourIdHere \
+       -H "Content-Type: application/json"
+
+Or use the general search:
+
+    curl -X GET http://localhost:8082/rentableArea/findAll \
+       -H "Content-Type: application/json"
+
+The response should look like:
+
+`{"id":2,"name":"Salao","size":30,"capacity":6,"value":50.0}`
+
 ### Testing Deletion
 
 Let's test how the deletion of a rentable area in the original database (MSCondominium) can be propagated to the reservation microservice (MSReservation). We will delete the rentable area from the original database.

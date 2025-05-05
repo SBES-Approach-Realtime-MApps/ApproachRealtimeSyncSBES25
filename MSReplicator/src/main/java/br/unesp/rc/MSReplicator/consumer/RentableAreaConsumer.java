@@ -9,11 +9,14 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.unesp.rc.CondominiumModel.model.Area;
 import br.unesp.rc.CondominiumModel.model.RentableArea;
 import br.unesp.rc.CondominiumModel.service.RentableAreaService;
 import br.unesp.rc.MSReplicator.domain.mapper.RentableAreaMapper;
 import br.unesp.rc.MSReplicator.domain.model.DebeziumMessage;
+import br.unesp.rc.MSReplicator.domain.model.DebeziumOperation;
 import br.unesp.rc.MSReplicator.domain.model.DebeziumPayload;
+import br.unesp.rc.MSReplicator.dto.AreaDTO;
 import br.unesp.rc.ReservationModel.service.ReservationRentableAreaService;
 
 @Component
@@ -67,6 +70,30 @@ public class RentableAreaConsumer {
                 default:
 
                     break;
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    @KafkaListener(topics = "MSCondominium.public.area", groupId = group)
+    public void areaConsumer(ConsumerRecord<String, String> record) {
+
+        try {
+            
+            String messageValue = record.value();
+    
+            DebeziumMessage<AreaDTO> debeziumMessage = objectMapper.readValue(
+                messageValue, new TypeReference<DebeziumMessage<AreaDTO>>() {}
+            );
+            DebeziumPayload<AreaDTO> payload = debeziumMessage.getPayload();
+
+            // Este é um caso específico da atualização, devido ao desencontro de informação que pode acontecer
+            if (payload.getOperation() == DebeziumOperation.UPDATE) {
+                RentableArea rentableArea = rentableAreaCondominiumService.findById(payload.getAfter().id());
+                System.out.println(rentableArea.getId());
+                br.unesp.rc.ReservationModel.model.RentableArea reservationRentableArea = RentableAreaMapper.toRentableArea(rentableArea);
+                rentableAreaReservationService.update(reservationRentableArea);
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
