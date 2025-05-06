@@ -4,10 +4,9 @@ To verify replication, we will use ready-made endpoints with shell commands to a
 
 For this, it is important to clarify that the case study in our Docker Compose is configured as follows, in order to confirm the source and destination of the URLs:
 
-- MSCondominium: expose port 8080
-- MSResident: expose port 8081
-- MSReservation: expose port 8082
-- MSReplicator: expose port 8084
+- MSCondominium: exposed in /condominium-service/
+- MSResident: exposed in /resident-service/
+- MSReservation: exposed in /reservation-service/
 
 ## Resident Example
 
@@ -15,7 +14,7 @@ Initially, to confirm the replication execution, we will check if all databases 
 
 General search endpoint for residents in <b>MSResident</b>:
 
-    curl -X GET http://localhost:8081/resident/findAll \
+    curl -X GET http://localhost:8085/resident-service/resident/findAll \
        -H "Content-Type: application/json"
 
 The response to this request should be an empty JSON list, like: `[]`
@@ -24,12 +23,12 @@ Residents persisted in the resident service database (MongoDB) are transmitted t
 
 General search endpoint for residents in <b>MSCondominium</b>:
 
-    curl -X GET http://localhost:8080/resident/findAll \
+    curl -X GET http://localhost:8085/condominium-service/resident/findAll \
        -H "Content-Type: application/json"
 
 General search endpoint for residents in <b>MSReservation</b>:
 
-    curl -X GET http://localhost:8082/resident/findAll \
+    curl -X GET http://localhost:8085/reservation-service/resident/findAll \
        -H "Content-Type: application/json"
 
 Both endpoints should also return empty JSON lists.
@@ -40,7 +39,7 @@ After verifying that these databases are empty, we will add a resident so that w
 
 Resident insertion endpoint for <b>MSResident</b>:
 
-    curl -X POST http://localhost:8081/resident/save \
+    curl -X POST http://localhost:8085/resident-service/resident/save \
        -H "Content-Type: application/json" \
        -d '{
             "name": "John Due",
@@ -110,24 +109,24 @@ Let's verify if it was added to the <b>MSResident</b> database. We can use eithe
 
 Specific search endpoint for residents in <b>MSResident</b>:
 
-    curl -X GET http://localhost:8081/resident/findById/putYourIdHere \
+    curl -X GET http://localhost:8085/resident-service/resident/findById/putYourIdHere \
        -H "Content-Type: application/json"
 
 Or use the general search:
 
-    curl -X GET http://localhost:8081/resident/findAll \
+    curl -X GET http://localhost:8085/resident-service/resident/findAll \
        -H "Content-Type: application/json"
 
 The response from this endpoint should contain the same data as the insertion endpoint response, with the only difference being that the general search will return the object inside a JSON list (`[{object}]`). After confirming that the object was created in this database, let's verify if the propagation worked by searching in the databases of the other microservices.
 
 Specific search endpoint for residents in <b>MSCondominium</b>:
 
-    curl -X GET http://localhost:8080/resident/findById/putYourIdHere \
+    curl -X GET http://localhost:8085/condominium-service/resident/findById/putYourIdHere \
        -H "Content-Type: application/json"
 
 Or use the general search:
 
-    curl -X GET http://localhost:8080/resident/findAll \
+    curl -X GET http://localhost:8085/condominium-service/resident/findAll \
        -H "Content-Type: application/json"
 
 The return should be something like:
@@ -138,12 +137,12 @@ There is an important difference in the return here: notice how the entity was t
 
 Specific search endpoint for residents in <b>MSReservation</b>:
 
-    curl -X GET http://localhost:8082/resident/findById/putYourIdHere \
+    curl -X GET http://localhost:8085/reservation-service/resident/findById/putYourIdHere \
        -H "Content-Type: application/json"
 
 Or use the general search:
 
-    curl -X GET http://localhost:8082/resident/findAll \
+    curl -X GET http://localhost:8085/reservation-service/resident/findAll \
        -H "Content-Type: application/json"
 
 The return should be something like:
@@ -159,7 +158,7 @@ Now let's test updating the resident entity we previously created in the origina
 
 Update resident endpoint for <b>MSResident</b>:
 
-    curl -X PUT http://localhost:8081/resident/update \
+    curl -X PUT http://localhost:8085/resident-service/resident/update \
        -H "Content-Type: application/json" \
        -d '{
                 "id": "putYourIdHere",
@@ -177,12 +176,12 @@ Notice how the name and resident type have already been updated in the original 
 
 Use the specific search for residents in <b>MSCondominium</b>:
 
-    curl -X GET http://localhost:8080/resident/findById/putYourIdHere \
+    curl -X GET http://localhost:8085/condominium-service/resident/findById/putYourIdHere \
        -H "Content-Type: application/json"
 
 Or use the general search:
 
-    curl -X GET http://localhost:8080/resident/findAll \
+    curl -X GET http://localhost:8085/condominium-service/resident/findAll \
        -H "Content-Type: application/json"
 
 The response should look like:
@@ -193,12 +192,12 @@ Notice that the name and resident type have already been updated in the <b>MSCon
 
 Use the specific search for residents in <b>MSReservation</b>:
 
-    curl -X GET http://localhost:8082/resident/findById/putYourIdHere \
+    curl -X GET http://localhost:8085/reservation-service/resident/findById/putYourIdHere \
        -H "Content-Type: application/json"
 
 Or use the general search:
 
-    curl -X GET http://localhost:8082/resident/findAll \
+    curl -X GET http://localhost:8085/reservation-service/resident/findAll \
        -H "Content-Type: application/json"
 
 The response should look like:
@@ -212,14 +211,14 @@ Now let's test the deletion of a resident from the original database and see how
 
 Resident deletion endpoint for <b>MSResident</b>:
 
-    curl -X DELETE http://localhost:8081/resident/delete/putYourIdHere \
+    curl -X DELETE http://localhost:8085/resident-service/resident/delete/putYourIdHere \
         -H "Content-Type: application/json"
 
 This request will not return any response body. Let's check if the original database actually no longer contains the previously existing resident.
 
 Use the general resident search endpoint for <b>MSResident</b>:
 
-    curl -X GET http://localhost:8081/resident/findAll \
+    curl -X GET http://localhost:8085/resident-service/resident/findAll \
         -H "Content-Type: application/json"
 
 The response from this endpoint should be an empty list: `[]`
@@ -228,14 +227,14 @@ Now let's verify if the deletion has been propagated to the databases of the oth
 
 Use the general resident search endpoint for <b>MSCondominium</b>:
 
-    curl -X GET http://localhost:8080/resident/findAll \
+    curl -X GET http://localhost:8085/condominium-service/resident/findAll \
        -H "Content-Type: application/json"
 
 The response from this endpoint should be an empty list: `[]`
 
 Use the general resident search endpoint for <b>MSReservation</b>:
 
-    curl -X GET http://localhost:8082/resident/findAll \
+    curl -X GET http://localhost:8085/reservation-service/resident/findAll \
        -H "Content-Type: application/json"
 
 The response from this endpoint should be an empty list: `[]`
@@ -248,7 +247,7 @@ To initially confirm the replication process, let's verify that all databases ar
 
 General rentable area search endpoint for <b>MSCondominium</b>:
 
-    curl -X GET http://localhost:8080/rentableArea/findAll \
+    curl -X GET http://localhost:8085/condominium-service/rentableArea/findAll \
        -H "Content-Type: application/json"
 
 The response to this request should be an empty JSON list, like: `[]`
@@ -257,7 +256,7 @@ The rentable areas persisted in the condominium database (Postgres) are transmit
 
 General rentable area search endpoint for <b>MSReservation</b>:
 
-    curl -X GET http://localhost:8082/rentableArea/findAll \
+    curl -X GET http://localhost:8085/reservation-service/rentableArea/findAll \
        -H "Content-Type: application/json"
 
 The response to this request should also be an empty list.
@@ -268,7 +267,7 @@ After confirming that these databases are empty, let's add a rentable area so we
 
 Condominium insertion endpoint for <b>MSCondominium</b>:
 
-    curl -X POST http://localhost:8080/condominium/save \
+    curl -X POST http://localhost:8085/condominium-service/condominium/save \
         -H "Content-Type: application/json" \
         -d '{
             "name": "Cond",
@@ -283,7 +282,7 @@ Now, we will add a rentable area associated with this condominium to verify the 
 
 Rentable area creation endpoint for <b>MSCondominium</b>:
 
-    curl -X POST http://localhost:8080/rentableArea/save \
+    curl -X POST http://localhost:8085/condominium-service/rentableArea/save \
         -H "Content-Type: application/json" \
         -d '{  
             "name": "Outro salao",
@@ -304,12 +303,12 @@ The response from this endpoint should be the rentable area saved in the databas
 
 Specific rentable area search endpoint for <b>MSCondominium</b>:
 
-    curl -X GET http://localhost:8080/rentableArea/findById/putYourIdHere \
+    curl -X GET http://localhost:8085/condominium-service/rentableArea/findById/putYourIdHere \
         -H "Content-Type: application/json"
 
 Or use the general search:
 
-    curl -X GET http://localhost:8080/rentableArea/findAll \
+    curl -X GET http://localhost:8085/condominium-service/rentableArea/findAll \
        -H "Content-Type: application/json"
 
 The response should look like:
@@ -320,12 +319,12 @@ Notice that the response now successfully associates the condominium object with
 
 Specific rentable area search endpoint for <b>MSReservation</b>:
 
-    curl -X GET http://localhost:8082/rentableArea/findById/putYourIdHere \
+    curl -X GET http://localhost:8085/reservation-service/rentableArea/findById/putYourIdHere \
        -H "Content-Type: application/json"
 
 Or use the general search:
 
-    curl -X GET http://localhost:8082/rentableArea/findAll \
+    curl -X GET http://localhost:8085/reservation-service/rentableArea/findAll \
        -H "Content-Type: application/json"
 
 The response should look like:
@@ -340,7 +339,7 @@ Now lets try update a Rentable Area in the original database and observe how thi
 
 Rentable Area update endpoint for <b>MSCondominium</b>:
 
-    curl -X PUT http://localhost:8080/rentableArea/update \
+    curl -X PUT http://localhost:8085/condominium-service/rentableArea/update \
         -H "Content-Type: application/json" \
         -d '{
             "id":"putYourIdHere",
@@ -356,12 +355,12 @@ Now, we can try search this entity in the database of the Reservation microservi
 
 Use the specific search
 
-    curl -X GET http://localhost:8082/rentableArea/findById/putYourIdHere \
+    curl -X GET http://localhost:8085/reservation-service/rentableArea/findById/putYourIdHere \
        -H "Content-Type: application/json"
 
 Or use the general search:
 
-    curl -X GET http://localhost:8082/rentableArea/findAll \
+    curl -X GET http://localhost:8085/reservation-service/rentableArea/findAll \
        -H "Content-Type: application/json"
 
 The response should look like:
@@ -374,14 +373,14 @@ Let's test how the deletion of a rentable area in the original database (MSCondo
 
 Rentable area deletion endpoint for <b>MSCondominium</b>:
 
-    curl -X DELETE http://localhost:8080/rentableArea/delete/putYourIdHere \
+    curl -X DELETE http://localhost:8085/condominium-service/rentableArea/delete/putYourIdHere \
         -H "Content-Type: application/json"
 
 This request does not have a response body, so let's verify whether our rentable area was actually deleted from the source database.
 
 Use the general search:
 
-    curl -X GET http://localhost:8080/rentableArea/findAll \
+    curl -X GET http://localhost:8085/condominium-service/rentableArea/findAll \
         -H "Content-Type: application/json"
 
 The response should be an empty JSON list: `[]`
@@ -390,7 +389,7 @@ Now, let's verify if the deletion was replicated to the reservation microservice
 
 Use the general search:
 
-    curl -X GET http://localhost:8082/rentableArea/findAll \
+    curl -X GET http://localhost:8085/reservation-service/rentableArea/findAll \
        -H "Content-Type: application/json"
 
 The response should also be an empty JSON list, thus confirming the replication of the rentable area deletion from the condominium microservice database to the reservation microservice database.
