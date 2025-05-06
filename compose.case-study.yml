@@ -171,6 +171,25 @@ services:
     networks:
       - integradorweb-net
 
+  APIGateway:
+    container_name: APIGateway
+    image: casestudy-apigateway
+    build:
+      context: .
+      dockerfile: CaseStudyGateway/Dockerfile
+    ports:
+      - "8085:8085"
+    environment:
+      MSCONDOMINIUM_HOST: MSCondominium
+      MSRESIDENT_HOST: MSResident
+      MSRESERVATION_HOST: MSReservation
+    depends_on:
+      - MSCondominium
+      - MSReservation
+      - MSResident
+    networks:
+      - integradorweb-net
+
 networks:
   integradorweb-net:
     driver: bridge
